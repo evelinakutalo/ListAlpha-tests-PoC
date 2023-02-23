@@ -2,14 +2,14 @@ import { defineConfig } from 'cypress';
 
 export default defineConfig({
   env: {
-    baseUrl: 'http://stage.listalpha.com',
+    baseUrl: 'http://dev.listalpha.com',
   },
   e2e: {
-    baseUrl: 'http://stage.listalpha.com',
+    baseUrl: 'http://dev.listalpha.com',
 
     specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
 
-    viewportWidth: 1280,
+    viewportWidth: 1440,
     viewportHeight: 970,
     videoUploadOnPasses: false,
     screenshotOnRunFailure: false,

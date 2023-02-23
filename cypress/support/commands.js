@@ -1,3 +1,5 @@
+import 'cypress-wait-until';
+
 Cypress.Commands.add(
     'signInUser',
     () => {

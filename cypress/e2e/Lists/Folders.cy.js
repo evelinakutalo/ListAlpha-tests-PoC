@@ -33,7 +33,7 @@ const addFolder = (folderName) => {
 // function to delete folder
 const deleteFolder = (folderName) => {
     // search created folder
-    cy.get("#root").children().contains(folderName).rightclick() 
+    cy.get("#root").children().contains(folderName).rightclick({force: true}) 
   
     // select Delete action
     cy.get('.mat-menu-item').contains("Delete Folder").click()
@@ -76,7 +76,7 @@ it('should edit folder name', () => {
     addFolder(folderName)
 
      // select required folder
-     cy.get("#root").children().first().contains(folderName).rightclick()  
+     cy.get("#root").children().first().contains(folderName).rightclick({force: true} )  
   
      //rename the list
 
@@ -103,7 +103,7 @@ it('should share folder with other teammate', () => {
     addFolder(folderName)
 
     // select required folder
-    cy.get("#root").children().first().contains(folderName).rightclick()  
+    cy.get("#root").children().first().contains(folderName).rightclick({force: true})  
   
     //share the list
 

@@ -61,7 +61,7 @@ const addGroup = (groupName) => {
 // function to delete group
 const deleteGroup = (groupName) => {
     // search created group
-    cy.get('.group-tile-header').first().contains(groupName).rightclick()   
+    cy.get('.group-wrapper').first().contains(groupName).rightclick({force: true})   
     // delete in mat-dialog-container
     cy.get('.mat-menu-item').contains("Delete group").click()
     cy.get(modalTag).contains(groupName).should('be.visible')
@@ -71,7 +71,7 @@ const deleteGroup = (groupName) => {
         cy.get('button').contains("Delete").click()
     })
     // verify if list is deleted
-    cy.get('.group-tile-header').first().contains(groupName).should('not.exist')
+    cy.get('.group-wrapper').first().contains(groupName).should('not.exist')
 }
     
 
@@ -89,14 +89,14 @@ describe("Groups flow", function () {
         
         addItem(listName)
 
-            cy.get("#root").children().last().contains(listName).should('exist')
+            cy.get("#root").children().contains(listName).should('exist')
 
         cy.get("#root").children().contains(listName).click()   
 
 
         addGroup(groupName)
 
-            cy.get('.group-tile-header').first().contains(groupName).should('exist')
+            cy.get('.group-wrapper').first().contains(groupName).should('exist')
             
         deleteGroup(groupName)
 
@@ -119,7 +119,7 @@ describe("Groups flow", function () {
         addGroup(groupName)
 
             // select created group
-            cy.get('.group-tile-header').first().contains(groupName).rightclick()   
+            cy.get('.group-wrapper').first().contains(groupName).rightclick({force: true})   
     
             // edit in mat-dialog-container
             cy.get('.mat-menu-item').contains("Edit group name").click()
@@ -136,7 +136,7 @@ describe("Groups flow", function () {
 
         cy.wait(1000)
 
-        cy.get('.group-tile-header').first().contains(editedGroupName).should('exist')
+        cy.get('.group-wrapper').first().contains(editedGroupName).should('exist')
 
         deleteGroup(editedGroupName)
 

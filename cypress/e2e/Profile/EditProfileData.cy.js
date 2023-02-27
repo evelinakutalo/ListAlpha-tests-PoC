@@ -83,7 +83,7 @@ describe('Edit Profile Data', () => {
         cy.get('[formcontrolname="company_name"]').type('Edited Test Company')
 
         cy.get('[formcontrolname="title"]').clear()
-        cy.get('[formcontrolname="title"]').type('Etited Test Title')
+        cy.get('[formcontrolname="title"]').type('Edited Test Title')
 
         cy.get('[formcontrolname="linkedin"]').clear()
         cy.get('[formcontrolname="linkedin"]').type('linkedin.com/edited')

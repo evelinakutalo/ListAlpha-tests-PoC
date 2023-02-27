@@ -39,12 +39,12 @@ describe('Add Profile', () => {
       cy.wait('@userRequest')
       // find div that contains expected, hover it and click on the delete button, to delete the user
      
-      cy.get('div.user-wrapper').contains(expected).should("be.visible")
+      cy.get('.user-wrapper').contains(expected).should('be.visible')
       // cy.get('div.tile-wrapper').eq(0).contains(expected).within(() => {
       //   cy.get('.tile-remove').click()
       // })
 
-      cy.get('div.user-wrapper').eq(0).within(() => {
+      cy.get('.user-wrapper').eq(0).within(() => {
         cy.get('.user-remove button').click({ force: true })
       })
 

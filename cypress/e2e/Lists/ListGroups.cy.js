@@ -111,32 +111,33 @@ describe("Groups flow", function () {
         
         addItem(listName)
 
-            cy.get("#root").children().contains(listName).should('exist')
+        cy.get("#root").children().contains(listName).should('exist')
 
+        cy.wait(1000)
         cy.get("#root").children().contains(listName).click()   
 
 
         addGroup(groupName)
 
-            // select created group
-            cy.get('.group-wrapper').first().contains(groupName).rightclick({force: true})   
-    
-            // edit in mat-dialog-container
-            cy.get('.mat-menu-item').contains("Edit group name").click()
-   
-            cy.get(modalTag).contains("Enter group name").should('be.visible')
-    
-            //isolate the element to search it only in mat-dialog-container
-    
-            cy.get('mat-dialog-container').within(() => {
-                cy.get('.mat-input-element').clear()
-                cy.get('.mat-input-element').type(editedGroupName)
-                cy.get('button').contains("Edit").click()
+        // select created group
+        cy.get('.group-wrapper').first().contains(groupName).rightclick({force: true})   
+
+        // edit in mat-dialog-container
+        cy.get('.mat-menu-item').contains("Edit group name").click()
+
+        cy.get(modalTag).contains("Enter group name").should('be.visible')
+
+        //isolate the element to search it only in mat-dialog-container
+
+        cy.get('mat-dialog-container').within(() => {
+            cy.get('.mat-input-element').clear()
+            cy.get('.mat-input-element').type(editedGroupName)
+            cy.get('button').contains("Edit").click()
         })
 
-        cy.wait(1000)
+        cy.wait(3000)
 
-        cy.get('.group-wrapper').first().contains(editedGroupName).should('exist')
+        cy.get('.group-wrapper').first().contains(editedGroupName).should('be.visible')
 
         deleteGroup(editedGroupName)
 

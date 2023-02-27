@@ -1,4 +1,4 @@
-describe('Add Tags', () => {
+describe('Add Notes', () => {
     beforeEach(() => {
       cy.signInUser()
   
@@ -11,7 +11,7 @@ describe('Add Tags', () => {
         const firstName = 'firstName'
         const lastName = 'lastName'
         const expected = `${firstName} ${lastName}`
-        const tagName = "Cypress"
+        const noteName = "Cypress note"
 
 
         cy.intercept({
@@ -45,27 +45,30 @@ describe('Add Tags', () => {
         cy.get('.user-wrapper').contains(expected).should('be.visible')
     
         cy.wait(2000)
-        //add tags
+
+        //add notes
         cy.get('.user-wrapper').contains(expected).click()
 
         cy.get('.mat-dialog-container').should('be.visible')
 
         cy.wait(2000)
 
-        cy.get('.mat-chip-input').click()
+        cy.get('.mat-button-wrapper').contains('Notes').click()
 
-        cy.get('.mat-chip-input').type(tagName).type('{enter}')
+        cy.get('.mat-dialog-container').within(() => {
+            cy.get('.notes-wrapper').click()
+            cy.get('.notes-wrapper').type(noteName)
+        })
 
         cy.get('.mat-button-wrapper').contains('Close').click()
 
         cy.wait(5000)
 
-        cy.get('.user-wrapper').within(() => {
-            cy.get('.mat-chip-ripple').contains(tagName).should('be.visible')
-        })
-
+        cy.get('.user-wrapper').eq(0).contains(expected)
         cy.get('.user-wrapper').eq(0).within(() => {
-          cy.get('.user-remove button').click({ force: true })
+            cy.get('.cell.user-notes').contains(noteName).should('exist')
+            
+            cy.get('.user-remove button').click({ force: true })
         })
   
         // wait until deleted

@@ -1,3 +1,5 @@
+const toastBlock = "snack-bar-container";
+
 describe('Search Profile in lists - List version', () => {
   beforeEach(() => {
     cy.signInUser()
@@ -33,14 +35,14 @@ describe('Search Profile in lists - List version', () => {
       cy.get('[formcontrolname="company_name"]').type('Test Company')
       cy.get('[formcontrolname="title"]').type('Test Title')
 
-    
-      
+
+
       cy.get('[type="submit"]').contains('Save').click()
-      
+
       cy.wait('@userRequest')
-     
+
       cy.get('div.user-wrapper').contains(expected).should("be.visible")
-  
+
       cy.wait(5000)
 
       //add tags
@@ -50,33 +52,32 @@ describe('Search Profile in lists - List version', () => {
 
       cy.wait(2000)
 
-      cy.get('.mat-chip-input').click()
-
-      cy.get('.mat-chip-input').type(tagName).type('{enter}')
+      cy.get('.mat-chip-input').first().click()
+      cy.get('.mat-chip-input').first().type(tagName).type('{enter}')
 
       cy.get('.mat-button-wrapper').contains('Close').click()
-      
-  
+
+
       cy.wait (5000)
 
       cy.get('.user-wrapper').eq(0).contains(expected).should('be.visible')
 
 
       //search by first name
-      
+
       cy.get('[placeholder="Search people by keywords"]').type('firstName')
 
       cy.get('.lists-container').contains('.user-wrapper', expected).should('exist')
 
       //search by last name
-      
+
       cy.get('[placeholder="Search people by keywords"]').clear()
       cy.get('[placeholder="Search people by keywords"]').type('lastName')
 
       cy.get('.lists-container').contains('.user-wrapper', expected).should('exist')
 
-      //search by headline 
-      
+      //search by headline
+
       cy.get('[placeholder="Search people by keywords"]').clear()
       cy.get('[placeholder="Search people by keywords"]').type('Worker')
 
@@ -84,7 +85,7 @@ describe('Search Profile in lists - List version', () => {
 
 
       //search by location
-      
+
       cy.get('[placeholder="Search people by keywords"]').clear()
       cy.get('[placeholder="Search people by keywords"]').type('Test City')
 
@@ -92,7 +93,7 @@ describe('Search Profile in lists - List version', () => {
 
 
       //search by company
-      
+
       cy.get('[placeholder="Search people by keywords"]').clear()
       cy.get('[placeholder="Search people by keywords"]').type('Test Company')
 
@@ -100,29 +101,34 @@ describe('Search Profile in lists - List version', () => {
 
 
       //search by title
-      
+
       cy.get('[placeholder="Search people by keywords"]').clear()
       cy.get('[placeholder="Search people by keywords"]').type('Test Title')
 
       cy.get('.lists-container').contains('.user-wrapper', expected).should('exist')
 
-      
+
       //search by tags
-      
+
       cy.get('[placeholder="Search people by keywords"]').clear()
       cy.get('[placeholder="Search people by keywords"]').type(tagName)
 
       cy.get('.lists-container').contains('.user-wrapper', expected).should('exist')
 
-
       cy.get('.user-wrapper').eq(0).within(() => {
         cy.get('.user-remove button').click({ force: true })
       })
 
+      cy.wait(1000)
+
+      cy.get('mat-dialog-container').within(() => {
+        cy.get('button').contains("Delete").click()
+      })
+
       // wait until deleted
-      cy.wait(2000)
+      cy.get(toastBlock).contains('removed');
 
       // at the end test that "expected" removed successfully
-      cy.get('.user-list-wrapper').contains('.user-wrapper', expected).first().should('not.exist')
+      cy.get('.user-list-wrapper').contains('.user-wrapper', expected).should('not.exist')
     })
   })

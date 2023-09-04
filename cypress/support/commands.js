@@ -7,10 +7,10 @@ Cypress.Commands.add(
 
         cy.get('form').first().within(() => {
             cy.get("#username").type("e.kutalo@geniusee.com")
-    
+
             cy.get("#password").type("test123TEST")
-    
-            cy.get("button[type='submit']").click()
+
+            cy.get("button[type='submit']").filter(":visible").click()
         })
     },
   );

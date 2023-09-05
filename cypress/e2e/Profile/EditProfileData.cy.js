@@ -1,35 +1,37 @@
+const toastBlock = "snack-bar-container";
+
 describe('Edit Profile Data', () => {
     beforeEach(() => {
       cy.signInUser()
-  
+
       cy.visit("https://dev-ui.listalpha.com/friends")
   })
-    
-    
-    it(`should: create user, edit his data and delete him`, () => {
-  
+
+
+    it.only(`should: create user, edit his data and delete him`, () => {
+
         const firstName = 'firstName'
         const lastName = 'lastName'
         const expected = `${firstName} ${lastName}`
         const editedFirstName = "New First Name"
         const editedLastName = "New Last Name"
 
-  
+
         cy.intercept({
           method: 'GET',
           url: '*/lists'
         }).as("userRequest")
-  
+
         cy.visit('https://dev-ui.listalpha.com/friends')
-    
+
         cy.wait(2000)
-        
+
         //create new user
         cy.get('[mattooltip="Add new profile"]').click()
         cy.get('.edit-options').should('be.visible')
-  
+
         cy.get('.tab').contains('Manual').click()
-  
+
         cy.get('[formcontrolname="first_name"]').type(firstName)
         cy.get('[formcontrolname="last_name"]').type(lastName)
         cy.get('[formcontrolname="headline"]').type('Worker')
@@ -40,20 +42,20 @@ describe('Edit Profile Data', () => {
         cy.get('[formcontrolname="title"]').type('Test Title')
         cy.get('[formcontrolname="linkedin"]').type('linkedin.com')
 
-        
+
         cy.get('.edit-options').click()
         cy.wait('@userRequest')
-        
+
         cy.get('[type="submit"]').contains('Save').click()
-        
+
         cy.wait('@userRequest')
         // find div that contains expected, hover it and click on the delete button, to delete the user
-       
-        cy.get('div.user-wrapper').contains(expected).should("be.visible")
-    
+
+        cy.get('.lists-container').contains('.user-wrapper', expected).should('exist')
+
         cy.wait(5000)
         //edit user's name
-        cy.get('div.user-wrapper').contains(expected).click()
+        cy.get('.lists-container').contains('.user-wrapper', expected).click()
 
         cy.get('.mat-dialog-container').should('be.visible')
 
@@ -94,17 +96,24 @@ describe('Edit Profile Data', () => {
 
         cy.get('.mat-button-wrapper').contains('Close').click()
 
-        cy.get('div.user-wrapper').contains(editedFirstName).should("be.visible")
+        cy.get('.lists-container').contains(editedFirstName).should('exist')
 
-        cy.get('div.user-wrapper').eq(0).within(() => {
+
+        //delete the profile
+         cy.get('.user-wrapper').eq(0).within(() => {
           cy.get('.user-remove button').click({ force: true })
         })
-  
+
+          cy.wait(1000)
+          cy.get('mat-dialog-container').within(() => {
+            cy.get('button').contains("Delete").click()
+        })
+
         // wait until deleted
-        cy.wait(2000)
-  
-      // at the end test that "expected" removed successfully
-        cy.get('.user-list-wrapper').contains('.user-wrapper', editedFirstName).should('not.exist')
+          cy.get(toastBlock).contains('removed');
+
+        cy.wait(5000)
+          // at the end test the contact was removed successfully
+          cy.get('.user-list-wrapper').eq(0).contains('.user-wrapper', editedFirstName).should('not.exist')
       })
     })
-  

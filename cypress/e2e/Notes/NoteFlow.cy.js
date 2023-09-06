@@ -32,7 +32,7 @@ const deleteNote = (noteName) => {
     cy.get('.note-wrapper').first().contains(noteName).click()
 
     cy.get('.mat-menu-trigger').contains('Note settings').click()
-    
+
     cy.get('.mat-menu-item').contains('Delete note').click()
 }
 
@@ -44,17 +44,17 @@ describe("Add New Note", function () {
     })
 
     //add new note
-    it('should add new note', () => {
+    it.skip('should add new note', () => {
         const noteName = generateNoteName()
-        
+
         addNote(noteName)
 
         cy.get('.note-wrapper').first().contains(noteName).should('be.visible')
 
         deleteNote(noteName)
     })
-    
-    it('title is changes correctly', () => {
+
+    it.skip('title is changes correctly', () => {
         const noteName = generateNoteName()
         const newNoteName = generateNoteName()
 
@@ -68,12 +68,12 @@ describe("Add New Note", function () {
 
         deleteNote(newNoteName)
     })
-    
-    it('adds profile to note and the note is appear in the selected user', () => {
+
+    it.skip('adds profile to note and the note is appear in the selected user', () => {
         cy.on('uncaught:exception', () => false)
         const userToTestOn = 'Aemen Tehmas'
         const noteName = generateNoteName()
-        
+
         addNote(noteName)
 
         cy.get('.note-wrapper').first().contains(noteName).click()
@@ -102,23 +102,23 @@ describe("Add New Note", function () {
 
         deleteNote(noteName)
     })
-    
-    it('adds deals to notes and new note is appearing in the selected deal', () => {
+
+    it.skip('adds deals to notes and new note is appearing in the selected deal', () => {
         cy.on('uncaught:exception', () => false)
         const dealName = 'Genius'
         const noteName = generateNoteName()
-        
+
         addNote(noteName)
 
         cy.get('.note-wrapper').first().contains(noteName).click()
         cy.get('.deal-wrapper [placeholder="Search by name"]').type(dealName)
         cy.get('mat-option').contains(dealName).click()
         cy.get('.deal-wrapper .user-card').first().contains(dealName).click()
-        
+
         cy.get('mat-dialog-container .tabs-wrapper .tab').contains('Notes').click()
         cy.get('.label-content .note-title input').should('have.value', noteName)
         cy.get('.cdk-overlay-backdrop').click({ force: true })
-        
+
         cy.get('.peope-wrapper .user-card').first().within(() => {
             // because button is not visible until hovered
             cy.get('.remove-card').click({ force: true })

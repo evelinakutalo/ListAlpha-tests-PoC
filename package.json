@@ -2,7 +2,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "test": "cypress run --record --key b7254517-6908-42f4-841a-e6af01e517fe",
+    "test": "cypress run",
+    "test:record": "cypress run --record --key b7254517-6908-42f4-841a-e6af01e517fe",
     "test:interact": "cypress open --browser chrome --e2e"
   },
   "dependencies": {

@@ -109,7 +109,7 @@ it('should edit folder name', () => {
 })
 
 
-//share folder
+//make private folder
 it('should share folder with other teammate', () => {
     const folderName = 'Test Folder'
 

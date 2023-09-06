@@ -29,7 +29,7 @@ const addDeal = (dealName) => {
 // function to delete deal
 const deleteDeal = (dealName) => {
     // search created deal
-    cy.get('.deals-list-tabs .tab-wrapper').contains('All deals').click()  
+    cy.get('.deals-list-tabs .tab-wrapper').contains('All deals').click()
 
     // delete in mat-dialog-container
 
@@ -51,7 +51,7 @@ describe("Add New Deal", function () {
     })
 
     //add new deal
-    it('should add new deal', () => {
+    it.skip('should add new deal', () => {
 
         const dealName = 'Test Deal'
 

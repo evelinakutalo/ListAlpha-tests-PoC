@@ -87,8 +87,8 @@ describe("List flow", function () {
         deleteItem(editedListName)
     })
 
-    //share list with other teammate
-    it('should share list with teammate', () => {
+    //make it private list with other teammate
+    it('should make shared list private', () => {
         const listName = 'Test List'
 
         addItem(listName)

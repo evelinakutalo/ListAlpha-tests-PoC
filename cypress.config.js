@@ -10,6 +10,8 @@ export default defineConfig({
 
     specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
 
+    experimentalStudio: true,
+
     viewportWidth: 1440,
     viewportHeight: 970,
     videoUploadOnPasses: false,

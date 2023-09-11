@@ -1,14 +1,14 @@
-import { defineConfig } from 'cypress';
+import { defineConfig } from "cypress";
 
 export default defineConfig({
   projectId: "t64w2f",
   env: {
-    baseUrl: 'https://dev-ui.listalpha.com/',
+    baseUrl: "https://dev-ui.listalpha.com/",
   },
   e2e: {
-    baseUrl: 'https://dev-ui.listalpha.com/',
+    baseUrl: "https://dev-ui.listalpha.com/",
 
-    specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
+    specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
 
     experimentalStudio: true,
 

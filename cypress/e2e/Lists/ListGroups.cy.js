@@ -1,150 +1,112 @@
-const modalTag = 'mat-dialog-container'
-const submitButton = "mat-button-wrapper"
-const groupName = 'Test Group'
-const listName = 'Test List'
-const editedGroupName = 'Test Group Edited'
-const toastBlock = "snack-bar-container";
-const listsRoot = "#shared-root"
+import {
+  addList,
+  deleteList,
+  getList,
+  fillEditNameModal,
+} from "../helpers/lists";
+import { MODAL_TAG, TOAST_TAG } from "../constants";
 
-
-// function to add new list
-const addItem = (listName) => {
-
-    //use intercept to wait until login will be finished
-    cy.intercept({
-        method: 'GET',
-        url: '*/lists'
-    }).as("userRequest")
-
-
-    cy.wait('@userRequest')
-    cy.get('[mattooltip="Create list"]').click()
-    cy.get('mat-dialog-container').should('be.visible')
-
-    cy.get('.mat-input-element').type(listName)
-    cy.get('.mat-button-wrapper').contains("Create").click()
-
-    cy.get(toastBlock).contains('created');
-}
-
-// function to delete list
-const deleteItem = (listName, sourceList = "#shared-root") => {
-    cy.log('Deleting item...')
-
-    cy.get(sourceList).children().contains(listName).rightclick({force: true})
-    cy.get('.mat-menu-item').contains("Delete list").click()
-
-    //isolate the element to search it only in mat-dialog-container
-    cy.get('mat-dialog-container').within(() => {
-        cy.get('button').contains("Delete").click()
-    })
-    cy.get(toastBlock).contains('deleted');
-    // verify if list is deleted
-    cy.get(sourceList).children().contains(listName).should('not.exist')
-
-    cy.log('Item deleted!')
-}
+const groupName = "Test Group";
+const listName = "Test List";
 
 // function to add new group
 const addGroup = (groupName) => {
-    cy.log('Adding group...');
+  cy.log("Adding group...");
 
-    cy.get('[mattooltip="Create group"]').click()
-    cy.get('mat-dialog-container').should('be.visible')
+  cy.get('[mattooltip="Create group"]').click();
+  cy.get(MODAL_TAG).should("be.visible");
 
-    //
-    cy.get('.mat-input-element').type(groupName)
-    cy.get('.mat-button-wrapper').contains("Create").click()
+  //
+  cy.get(".mat-input-element").type(groupName);
+  cy.get(".mat-button-wrapper").contains("Create").click();
 
-    //wait until list is created
-    cy.wait(2000)
-    cy.log('Group added!');
-}
+  //wait until list is created
+  cy.wait(2000);
+  cy.log("Group added!");
+};
 
 // function to delete group
 const deleteGroup = (groupName) => {
-    cy.log('Deleting group...');
-    // search created group
-    cy.get('.group-wrapper').first().contains(groupName).rightclick({force: true})
-    // delete in mat-dialog-container
-    cy.get('.mat-menu-item').contains("Delete group").click()
-    cy.get(modalTag).contains(groupName).should('be.visible')
+  cy.log("Deleting group...");
+  // search created group
+  cy.get(".group-wrapper")
+    .first()
+    .contains(groupName)
+    .rightclick({ force: true });
+  // delete in MODAL_TAG
+  cy.get(".mat-menu-item").contains("Delete group").click();
+  cy.get(MODAL_TAG).contains(groupName).should("be.visible");
 
-    //isolate the element to search it only in mat-dialog-container
-    cy.get('mat-dialog-container').within(() => {
-        cy.get('button').contains("Delete").click()
-    })
-    cy.get(toastBlock).contains('deleted');
-    cy.wait(5000);
-    // verify if list is deleted
-    cy.get('.group-wrapper').should('not.exist')
-    cy.log('Group deleted!');
-}
+  //isolate the element to search it only in MODAL_TAG
+  cy.get(MODAL_TAG).within(() => {
+    cy.get("button").contains("Delete").click();
+  });
+  cy.get(TOAST_TAG).contains("deleted");
+  cy.wait(5000);
+  // verify if list is deleted
+  cy.get(".group-wrapper").should("not.exist");
+  cy.log("Group deleted!");
+};
 
 describe("Groups flow", function () {
-    beforeEach(() => {
-        cy.signInUser()
+  beforeEach(() => {
+    cy.signInUser();
 
-        cy.visit("https://dev-ui.listalpha.com/friends")
-    })
+    cy.visit("https://dev-ui.listalpha.com/friends");
+  });
 
-    //add new group
-    it('should add new group in the list', () => {
-        const listName = 'Test List'
+  //add new group
+  it("should add new group in the list", () => {
+    addList({ name: listName });
 
-        addItem(listName)
+    getList({ name: listName }).should("exist");
+    getList({ name: listName }).click();
 
-        cy.get(listsRoot).children().contains(listName).should('exist')
-        cy.get(listsRoot).children().contains(listName).click()
+    addGroup(groupName);
 
-        addGroup(groupName)
+    cy.get(".group-wrapper").first().contains(groupName).should("exist");
 
-        cy.get('.group-wrapper').first().contains(groupName).should('exist')
+    deleteGroup(groupName);
 
-        deleteGroup(groupName)
+    deleteList({ name: listName });
+  });
 
-        deleteItem(listName)
-    })
+  //edit group name
+  it("should edit group name in the list", () => {
+    const groupName = "Test Group";
+    const editedGroupName = "Test Group Edited";
 
+    addList({ name: listName });
 
-    //edit group name
-    it('should edit group name in the list', () => {
-        const groupName = 'Test Group'
-        const editedGroupName = 'Test Group Edited'
+    getList({ name: listName }).should("exist");
+    cy.wait(1000);
+    getList({ name: listName }).click();
 
-        addItem(listName)
+    addGroup(groupName);
 
-        cy.get(listsRoot).children().contains(listName).should('exist')
+    // select created group
+    cy.get(".group-wrapper")
+      .first()
+      .contains(groupName)
+      .rightclick({ force: true });
 
-        cy.wait(1000)
-        cy.get(listsRoot).children().contains(listName).click()
+    // edit in MODAL_TAG
+    cy.get(".mat-menu-item").contains("Edit group name").click();
 
+    cy.get(MODAL_TAG).contains("Enter group name").should("be.visible");
 
-        addGroup(groupName)
+    //isolate the element to search it only in MODAL_TAG
+    fillEditNameModal({ value: editedGroupName });
 
-        // select created group
-        cy.get('.group-wrapper').first().contains(groupName).rightclick({force: true})
+    cy.wait(3000);
 
-        // edit in mat-dialog-container
-        cy.get('.mat-menu-item').contains("Edit group name").click()
+    cy.get(".group-wrapper")
+      .first()
+      .contains(editedGroupName)
+      .should("be.visible");
 
-        cy.get(modalTag).contains("Enter group name").should('be.visible')
+    deleteGroup(editedGroupName);
 
-        //isolate the element to search it only in mat-dialog-container
-
-        cy.get('mat-dialog-container').within(() => {
-            cy.get('.mat-input-element').clear()
-            cy.get('.mat-input-element').type(editedGroupName)
-            cy.get('button').contains("Edit").click()
-        })
-
-        cy.wait(3000)
-
-        cy.get('.group-wrapper').first().contains(editedGroupName).should('be.visible')
-
-        deleteGroup(editedGroupName)
-
-        deleteItem(listName)
-    })
-
-})
+    deleteList({ name: listName });
+  });
+});

@@ -1,134 +1,143 @@
 const toastBlock = "snack-bar-container";
 
-describe('Search Profile in lists - List version', () => {
+describe("Search Profile in lists - List version", () => {
   beforeEach(() => {
-    cy.signInUser()
+    cy.signInUser();
 
-    cy.visit("https://dev-ui.listalpha.com/friends")
-})
+    cy.visit("https://dev-ui.listalpha.com/friends");
+  });
 
   it(`should: create profile, search in lists and delete him`, () => {
+    const firstName = "firstName";
+    const lastName = "lastName";
+    const expected = `${firstName} ${lastName}`;
+    const tagName = "Cypress";
 
-      const firstName = 'firstName'
-      const lastName = 'lastName'
-      const expected = `${firstName} ${lastName}`
-      const tagName = "Cypress"
+    cy.intercept({
+      method: "GET",
+      url: "*/lists",
+    }).as("userRequest");
 
-      cy.intercept({
-        method: 'GET',
-        url: '*/lists'
-      }).as("userRequest")
+    cy.visit("https://dev-ui.listalpha.com/friends");
 
-      cy.visit('https://dev-ui.listalpha.com/friends')
+    cy.wait("@userRequest");
 
-      cy.wait('@userRequest')
+    cy.get('[mattooltip="Add new profile"]').click();
+    cy.get(".edit-options").should("be.visible");
 
-      cy.get('[mattooltip="Add new profile"]').click()
-      cy.get('.edit-options').should('be.visible')
+    cy.get(".tab").contains("Manual").click();
 
-      cy.get('.tab').contains('Manual').click()
+    cy.get('[formcontrolname="first_name"]').type(firstName);
+    cy.get('[formcontrolname="last_name"]').type(lastName);
+    cy.get('[formcontrolname="headline"]').type("Worker");
+    cy.get('[formcontrolname="location"]').type("Test City");
+    cy.get('[formcontrolname="company_name"]').type("Test Company");
+    cy.get('[formcontrolname="title"]').type("Test Title");
 
-      cy.get('[formcontrolname="first_name"]').type(firstName)
-      cy.get('[formcontrolname="last_name"]').type(lastName)
-      cy.get('[formcontrolname="headline"]').type('Worker')
-      cy.get('[formcontrolname="location"]').type('Test City')
-      cy.get('[formcontrolname="company_name"]').type('Test Company')
-      cy.get('[formcontrolname="title"]').type('Test Title')
+    cy.get('[type="submit"]').contains("Save").click();
 
+    cy.wait("@userRequest");
 
+    cy.get("div.user-wrapper").contains(expected).should("be.visible");
 
-      cy.get('[type="submit"]').contains('Save').click()
+    cy.wait(5000);
 
-      cy.wait('@userRequest')
+    //add tags
+    cy.get("div.user-wrapper").contains(expected).click();
 
-      cy.get('div.user-wrapper').contains(expected).should("be.visible")
+    cy.get(".mat-dialog-container").should("be.visible");
 
-      cy.wait(5000)
+    cy.wait(2000);
 
-      //add tags
-      cy.get('div.user-wrapper').contains(expected).click()
+    cy.get(".mat-chip-input").first().click();
+    cy.get(".mat-chip-input").first().type(tagName).type("{enter}");
 
-      cy.get('.mat-dialog-container').should('be.visible')
+    cy.get(".mat-button-wrapper").contains("Close").click();
 
-      cy.wait(2000)
+    cy.wait(5000);
 
-      cy.get('.mat-chip-input').first().click()
-      cy.get('.mat-chip-input').first().type(tagName).type('{enter}')
+    cy.get(".user-wrapper").eq(0).contains(expected).should("be.visible");
 
-      cy.get('.mat-button-wrapper').contains('Close').click()
+    //search by first name
 
+    cy.get('[placeholder="Search people by keywords"]').type("firstName");
 
-      cy.wait (5000)
+    cy.get(".lists-container")
+      .contains(".user-wrapper", expected)
+      .should("exist");
 
-      cy.get('.user-wrapper').eq(0).contains(expected).should('be.visible')
+    //search by last name
 
+    cy.get('[placeholder="Search people by keywords"]').clear();
+    cy.get('[placeholder="Search people by keywords"]').type("lastName");
 
-      //search by first name
+    cy.get(".lists-container")
+      .contains(".user-wrapper", expected)
+      .should("exist");
 
-      cy.get('[placeholder="Search people by keywords"]').type('firstName')
+    //search by headline
 
-      cy.get('.lists-container').contains('.user-wrapper', expected).should('exist')
+    cy.get('[placeholder="Search people by keywords"]').clear();
+    cy.get('[placeholder="Search people by keywords"]').type("Worker");
 
-      //search by last name
+    cy.get(".lists-container")
+      .contains(".user-wrapper", expected)
+      .should("exist");
 
-      cy.get('[placeholder="Search people by keywords"]').clear()
-      cy.get('[placeholder="Search people by keywords"]').type('lastName')
+    //search by location
 
-      cy.get('.lists-container').contains('.user-wrapper', expected).should('exist')
+    cy.get('[placeholder="Search people by keywords"]').clear();
+    cy.get('[placeholder="Search people by keywords"]').type("Test City");
 
-      //search by headline
+    cy.get(".lists-container")
+      .contains(".user-wrapper", expected)
+      .should("exist");
 
-      cy.get('[placeholder="Search people by keywords"]').clear()
-      cy.get('[placeholder="Search people by keywords"]').type('Worker')
+    //search by company
 
-      cy.get('.lists-container').contains('.user-wrapper', expected).should('exist')
+    cy.get('[placeholder="Search people by keywords"]').clear();
+    cy.get('[placeholder="Search people by keywords"]').type("Test Company");
 
+    cy.get(".lists-container")
+      .contains(".user-wrapper", expected)
+      .should("exist");
 
-      //search by location
+    //search by title
 
-      cy.get('[placeholder="Search people by keywords"]').clear()
-      cy.get('[placeholder="Search people by keywords"]').type('Test City')
+    cy.get('[placeholder="Search people by keywords"]').clear();
+    cy.get('[placeholder="Search people by keywords"]').type("Test Title");
 
-      cy.get('.lists-container').contains('.user-wrapper', expected).should('exist')
+    cy.get(".lists-container")
+      .contains(".user-wrapper", expected)
+      .should("exist");
 
+    //search by tags
 
-      //search by company
+    cy.get('[placeholder="Search people by keywords"]').clear();
+    cy.get('[placeholder="Search people by keywords"]').type(tagName);
 
-      cy.get('[placeholder="Search people by keywords"]').clear()
-      cy.get('[placeholder="Search people by keywords"]').type('Test Company')
+    cy.get(".lists-container")
+      .contains(".user-wrapper", expected)
+      .should("exist");
 
-      cy.get('.lists-container').contains('.user-wrapper', expected).should('exist')
+    cy.get(".user-wrapper")
+      .eq(0)
+      .within(() => {
+        cy.get(".user-remove button").click({ force: true });
+      });
 
+    cy.wait(1000);
 
-      //search by title
+    cy.get("mat-dialog-container").within(() => {
+      cy.get("button").contains("Delete").click();
+    });
 
-      cy.get('[placeholder="Search people by keywords"]').clear()
-      cy.get('[placeholder="Search people by keywords"]').type('Test Title')
+    // wait until deleted
+    cy.get(toastBlock).contains("removed");
 
-      cy.get('.lists-container').contains('.user-wrapper', expected).should('exist')
-
-
-      //search by tags
-
-      cy.get('[placeholder="Search people by keywords"]').clear()
-      cy.get('[placeholder="Search people by keywords"]').type(tagName)
-
-      cy.get('.lists-container').contains('.user-wrapper', expected).should('exist')
-
-      cy.get('.user-wrapper').eq(0).within(() => {
-        cy.get('.user-remove button').click({ force: true })
-      })
-
-      cy.wait(1000)
-
-      cy.get('mat-dialog-container').within(() => {
-        cy.get('button').contains("Delete").click()
-      })
-
-      // wait until deleted
-      cy.get(toastBlock).contains('removed');
-
-      // at the end test that "expected" removed successfully
-      cy.get('.user-list-wrapper').contains('.user-wrapper', expected).should('not.exist')
-    })
-  })
+    // at the end test that "expected" removed successfully
+    cy.get(".user-list-wrapper")
+      .contains(".user-wrapper", expected)
+      .should("not.exist");
+  });
+});

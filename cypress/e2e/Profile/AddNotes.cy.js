@@ -1,80 +1,93 @@
-describe('Add Notes', () => {
-    beforeEach(() => {
-      cy.signInUser()
+const toastBlock = "snack-bar-container";
 
-      cy.visit("https://dev-ui.listalpha.com/friends")
-  })
+describe("Add Notes", () => {
+  beforeEach(() => {
+    cy.signInUser();
 
+    cy.visit("https://dev-ui.listalpha.com/friends");
+  });
 
-    it.skip(`should: create user, add new tags and delete him`, () => {
+  it(`should: create user, add new note and delete him`, () => {
+    const firstName = "firstName";
+    const lastName = "lastName";
+    const expected = `${firstName} ${lastName}`;
+    const noteName = "Cypress note";
 
-        const firstName = 'firstName'
-        const lastName = 'lastName'
-        const expected = `${firstName} ${lastName}`
-        const noteName = "Cypress note"
+    cy.intercept({
+      method: "GET",
+      url: "*/lists",
+    }).as("userRequest");
 
+    cy.visit("https://dev-ui.listalpha.com/friends");
 
-        cy.intercept({
-          method: 'GET',
-          url: '*/lists'
-        }).as("userRequest")
+    cy.wait(2000);
 
-        cy.visit('https://dev-ui.listalpha.com/friends')
+    //create new user
+    cy.get('[mattooltip="Add new profile"]').click();
+    cy.get(".edit-options").should("be.visible");
 
-        cy.wait(2000)
+    cy.get(".tab").contains("Manual").click();
 
-        //create new user
-        cy.get('[mattooltip="Add new profile"]').click()
-        cy.get('.edit-options').should('be.visible')
+    cy.get('[formcontrolname="first_name"]').type(firstName);
+    cy.get('[formcontrolname="last_name"]').type(lastName);
+    cy.get('[formcontrolname="company_name"]').type("Test Company");
 
-        cy.get('.tab').contains('Manual').click()
+    cy.get(".edit-options").click();
+    cy.wait("@userRequest");
 
-        cy.get('[formcontrolname="first_name"]').type(firstName)
-        cy.get('[formcontrolname="last_name"]').type(lastName)
-        cy.get('[formcontrolname="company_name"]').type('Test Company')
+    cy.get('[type="submit"]').contains("Save").click();
 
+    cy.wait(5000);
+    // find div that contains expected, hover it and click on the delete button, to delete the user
 
-        cy.get('.edit-options').click()
-        cy.wait('@userRequest')
+    cy.get(".user-wrapper").contains(expected).should("be.visible");
 
-        cy.get('[type="submit"]').contains('Save').click()
+    cy.wait(2000);
 
-        cy.wait(5000)
-        // find div that contains expected, hover it and click on the delete button, to delete the user
+    //add notes
+    cy.get(".user-wrapper").contains(expected).click();
 
-        cy.get('.user-wrapper').contains(expected).should('be.visible')
+    cy.get(".mat-dialog-container").should("be.visible");
 
-        cy.wait(2000)
+    cy.wait(2000);
 
-        //add notes
-        cy.get('.user-wrapper').contains(expected).click()
+    cy.get(".mat-button-wrapper").contains("Notes").click();
 
-        cy.get('.mat-dialog-container').should('be.visible')
+    cy.get(".mat-dialog-container").within(() => {
+      cy.get(".notes-wrapper").click();
+      cy.get(".notes-wrapper").type(noteName);
+    });
 
-        cy.wait(2000)
+    cy.get(".mat-button-wrapper").contains("Close").click();
 
-        cy.get('.mat-button-wrapper').contains('Notes').click()
+    cy.wait(5000);
 
-        cy.get('.mat-dialog-container').within(() => {
-            cy.get('.notes-wrapper').click()
-            cy.get('.notes-wrapper').type(noteName)
-        })
+    cy.get(".user-wrapper").eq(0).contains(expected);
 
-        cy.get('.mat-button-wrapper').contains('Close').click()
+    cy.get(".user-wrapper")
+      .eq(0)
+      .within(() => {
+        cy.get(".cell.user-notes").should("exist");
+      });
 
-        cy.wait(5000)
+    cy.get(".user-wrapper")
+      .eq(0)
+      .within(() => {
+        cy.get(".user-remove button").click({ force: true });
+      });
 
-        cy.get('.user-wrapper').eq(0).contains(expected)
-        cy.get('.user-wrapper').eq(0).within(() => {
-            cy.get('.cell.user-notes').contains(noteName).should('exist')
+    cy.wait(1000);
+    cy.get("mat-dialog-container").within(() => {
+      cy.get("button").contains("Delete").click();
+    });
 
-            cy.get('.user-remove button').click({ force: true })
-        })
+    // wait until deleted
+    cy.get(toastBlock).contains("removed");
 
-        // wait until deleted
-        cy.wait(2000)
-
-      // at the end test that "expected" removed successfully
-        cy.get('.user-list-wrapper').contains('.user-wrapper', expected).should('not.exist')
-      })
-    })
+    // at the end test that "expected" removed successfully
+    cy.get(".user-list-wrapper")
+      .eq(0)
+      .contains(".user-wrapper", expected)
+      .should("not.exist");
+  });
+});

@@ -1,61 +1,67 @@
+import { toastBlock } from "../constants"
 
 describe('Automatic Add Profile (Easy Add)', () => {
-    beforeEach(() => {
-      cy.signInUser()
+  beforeEach(() => {
+    cy.signInUser()
 
-      cy.visit("https://dev-ui.listalpha.com/friends")
+    cy.visit("https://dev-ui.listalpha.com/friends")
   })
 
+  it(`should: automatically add new user and then delete him`, () => {
+    const name = 'Ihar Valodzin'
+    cy.intercept({
+      method: 'GET',
+      url: '*/lists'
+    }).as("userRequest")
 
-    it.skip(`should: automatically add new user and then delete him`, () => {
+    cy.visit('https://dev-ui.listalpha.com/friends')
 
-        const name = 'Test'
+    cy.wait(5000)
 
-        cy.intercept({
-          method: 'GET',
-          url: '*/lists'
-        }).as("userRequest")
+    cy.get('[mattooltip="Add new profile"]').click()
+    cy.get('.edit-options').should('be.visible')
 
-        cy.visit('https://dev-ui.listalpha.com/friends')
+    cy.get('.edit-options').within(() => {
+      cy.get('[placeholder="Search by name"]').type(name)
+      cy.get('.mat-flat-button').contains('Search').click()
 
-        cy.wait(5000)
+      cy.wait(3000)
 
-        cy.get('[mattooltip="Add new profile"]').click()
-        cy.get('.edit-options').should('be.visible')
-
-        cy.get('.edit-options').within(() => {
-          cy.get('[placeholder="Search by name"]').type(name)
-          cy.get('.mat-flat-button').contains('Search').click()
-
-          cy.wait(5000)
-
-          cy.get('.contacts-list').within(() => {
-            cy.get('.contact').first().click()
-          })
-        })
-
-        cy.wait(5000)
-
-        cy.get('app-dialog-employee-add').within(() => {
-          cy.get('.preview').should('be.visible')
-
-          cy.get('.preview').within(() => {
-          cy.get('.mat-button-wrapper').contains('Save').click()
-          })
-
-        })
-          cy.wait(5000)
-
-        // find div that contains expected, hover it and click on the delete button, to delete the user
-
-        cy.get('.user-wrapper').eq(0).contains(name).should('be.visible')
-
-        cy.get('.user-wrapper').eq(0).within(() => {
-          cy.get('.user-remove button').click({ force: true })
-        })
-
-
-      // at the end test that "expected" removed successfully
-        cy.get('.user-list-wrapper').contains('.user-wrapper', name).should('not.exist')
+      cy.get('.contacts-list').within(() => {
+        cy.get('.contact').first().click()
       })
+    })
+
+    cy.wait(5000)
+
+    cy.get('app-dialog-employee-add').within(() => {
+      cy.get('.preview').should('be.visible')
+
+      cy.get('.preview').within(() => {
+      cy.get('.mat-button-wrapper').contains('Save').click()
+      })
+
+    })
+      cy.wait(5000)
+
+    // find div that contains name
+    cy.get('.lists-container').contains(name).should('exist')
+
+    //delete the profile
+    cy.get('.user-wrapper').eq(0).within(() => {
+      cy.get('.user-remove button').click({ force: true })
+    })
+
+    cy.wait(1000)
+    cy.get('mat-dialog-container').within(() => {
+      cy.get('button').contains("Delete").click()
+    })
+
+    // wait until deleted
+    cy.get(toastBlock).contains('removed');
+
+    cy.wait(3000)
+    // at the end test that "name" removed successfully
+    cy.get('.user-list-wrapper').eq(0).contains('.user-wrapper', name).should('not.exist')
+  })
 })

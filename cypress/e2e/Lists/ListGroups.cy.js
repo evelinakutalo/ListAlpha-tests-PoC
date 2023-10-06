@@ -64,6 +64,8 @@ describe("Groups flow", function () {
 
     addGroup(groupName);
 
+    cy.wait(3000);
+
     cy.get(".group-wrapper").first().contains(groupName).should("exist");
 
     deleteGroup(groupName);
@@ -83,6 +85,8 @@ describe("Groups flow", function () {
     getList({ name: listName }).click();
 
     addGroup(groupName);
+
+    cy.wait(5000);
 
     // select created group
     cy.get(".group-wrapper")

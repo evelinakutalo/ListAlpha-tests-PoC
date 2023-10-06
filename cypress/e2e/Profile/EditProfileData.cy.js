@@ -8,8 +8,8 @@ describe("Edit Profile Data", () => {
   });
 
   it.only(`should: create user, edit his data and delete him`, () => {
-    const firstName = "firstName";
-    const lastName = "lastName";
+    const firstName = "First Name";
+    const lastName = "Last Name";
     const expected = `${firstName} ${lastName}`;
     const editedFirstName = "New First Name";
     const editedLastName = "New Last Name";

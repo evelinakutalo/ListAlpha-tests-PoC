@@ -1,67 +1,71 @@
-import { toastBlock } from "../constants"
-
-describe('Automatic Add Profile (Easy Add)', () => {
+describe("Automatic Add Profile (Easy Add)", () => {
   beforeEach(() => {
-    cy.signInUser()
-
-    cy.visit("https://dev-ui.listalpha.com/friends")
-  })
+    cy.signInUser();
+  });
 
   it(`should: automatically add new user and then delete him`, () => {
-    const name = 'Ihar Valodzin'
     cy.intercept({
-      method: 'GET',
-      url: '*/lists'
-    }).as("userRequest")
+      method: "GET",
+      url: "*/lists",
+    }).as("userRequest");
 
-    cy.visit('https://dev-ui.listalpha.com/friends')
+    const name = "Ihar Valodzin";
+    const toastBlock = "snack-bar-container";
 
-    cy.wait(5000)
+    cy.get('[routerlink="/friends"].navigation-link').click();
 
-    cy.get('[mattooltip="Add new profile"]').click()
-    cy.get('.edit-options').should('be.visible')
+    cy.wait(5000);
 
-    cy.get('.edit-options').within(() => {
-      cy.get('[placeholder="Search by name"]').type(name)
-      cy.get('.mat-flat-button').contains('Search').click()
+    cy.get('[mattooltip="Add new profile"]').click();
+    cy.get(".edit-options").should("be.visible");
 
-      cy.wait(3000)
+    cy.get(".edit-options").within(() => {
+      cy.get('[placeholder="Search by name"]').type(name);
+      cy.get(".mat-flat-button").contains("Search").click();
 
-      cy.get('.contacts-list').within(() => {
-        cy.get('.contact').first().click()
-      })
-    })
+      cy.wait(3000);
 
-    cy.wait(5000)
+      cy.get(".contacts-list").within(() => {
+        cy.get(".contact").first().click();
+      });
+    });
 
-    cy.get('app-dialog-employee-add').within(() => {
-      cy.get('.preview').should('be.visible')
+    cy.wait(3000);
 
-      cy.get('.preview').within(() => {
-      cy.get('.mat-button-wrapper').contains('Save').click()
-      })
+    cy.get("app-dialog-employee-add").within(() => {
+      cy.get(".preview").should("be.visible");
 
-    })
-      cy.wait(5000)
+      cy.get(".preview").within(() => {
+        cy.get(".mat-button-wrapper").contains("Save").click();
+      });
+    });
+    cy.wait(3000);
 
     // find div that contains name
-    cy.get('.lists-container').contains(name).should('exist')
+    cy.get(".lists-container").contains(name).should("exist");
 
     //delete the profile
-    cy.get('.user-wrapper').eq(0).within(() => {
-      cy.get('.user-remove button').click({ force: true })
-    })
+    cy.get(".user-wrapper")
+      .eq(0)
+      .within(() => {
+        cy.get(".user-remove button").click({ force: true });
+      });
 
-    cy.wait(1000)
-    cy.get('mat-dialog-container').within(() => {
-      cy.get('button').contains("Delete").click()
-    })
+    cy.wait(3000);
+    cy.get("mat-dialog-container")
+      .first()
+      .within(() => {
+        cy.get("button").contains("Delete").click();
+      });
 
     // wait until deleted
-    cy.get(toastBlock).contains('removed');
+    cy.get(toastBlock).contains("removed");
 
-    cy.wait(3000)
+    cy.wait(2000);
     // at the end test that "name" removed successfully
-    cy.get('.user-list-wrapper').eq(0).contains('.user-wrapper', name).should('not.exist')
-  })
-})
+    cy.get(".user-list-wrapper")
+      .eq(0)
+      .contains(".user-wrapper", name)
+      .should("not.exist");
+  });
+});
